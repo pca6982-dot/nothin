@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My UI</title>
+</head>
+<body>
+    <div id="content"></div>
+
+    <script>
+        // نجيب بيانات من الموقع اللي انت عايزه
+        fetch("https://answers.netlify.com/")
+            .then(resp => resp.text())
+            .then(html => {
+                document.getElementById("content").innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById("content").innerText = "Error: " + err;
+            })
+    </script>
+
+</body>
+</html>
