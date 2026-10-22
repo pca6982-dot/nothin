@@ -2545,25 +2545,82 @@ document.addEventListener(
       (document.head || document.documentElement).appendChild(css);
     }
     css.textContent =
-      "#aura-loader{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483000;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(0,0,0,.5);color:#fff;font-weight:300;font-family:sans-serif;font-size:1.2vh;transition:opacity .5s}" +
-      "#aura-loader.hide{display:none!important;opacity:0!important}" +
-      "#aura-loader .aura-loader-box{width:35vh;display:flex;flex-direction:column;align-items:center;gap:1vh}" +
-      "#aura-loader .aura-loader-text{color:#fff;font-size:1.4vh;text-align:center;font-weight:300;text-shadow:0 0 1.2vh #000,0 0 2vh #000}" +
-      "#aura-loader .aura-loader-bar{margin:.5vh 0;width:100%;height:.65vh;background:#000;border-radius:.35vh}" +
-      "#aura-loader .aura-loader-fill{margin-top:-.1vh;width:0;height:100%;background:#fff;transition:width .3s ease;border-radius:.35vh}" +
-      "#aura-loader .aura-loader-pct{color:#fff;font-size:1.1vh;font-weight:700;text-align:center;text-shadow:0 0 1.2vh #000}";
-    var el = document.getElementById("aura-loader");
+      ".shark-loading-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .3s cubic-bezier(.16,1,.3,1),transform .3s cubic-bezier(.16,1,.3,1);font-family:Poppins,Montserrat,-apple-system,BlinkMacSystemFont,sans-serif;user-select:none;background:transparent!important}" +
+      ".shark-loading-overlay.active{opacity:1;transform:translate(-50%,-50%) scale(1)}" +
+      ".shark-loading-card{width:400px;background:#0d0e12!important;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 20px;box-shadow:0 12px 36px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}" +
+      ".shark-loading-header{display:flex;align-items:center;gap:14px}" +
+      ".shark-avatar-container{position:relative;width:44px;height:44px;flex-shrink:0}" +
+      ".shark-loading-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.25);background:#18181b;box-shadow:0 4px 12px rgba(0,0,0,.5);display:block}" +
+      ".shark-avatar-glow{position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(255,255,255,.35);animation:sharkAvatarPulse 2s infinite ease-in-out;pointer-events:none}" +
+      "@keyframes sharkAvatarPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.8;transform:scale(1.06)}}" +
+      ".shark-loading-text-col{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}" +
+      ".shark-loading-brand{font-size:13px;font-weight:700;letter-spacing:1.2px;color:#fff;text-transform:uppercase;text-shadow:0 2px 6px rgba(0,0,0,.6)}" +
+      ".shark-loading-desc{font-size:11.5px;font-weight:400;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}" +
+      ".shark-loading-badge{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:8px;letter-spacing:.5px;flex-shrink:0;min-width:44px;text-align:center}" +
+      ".shark-loading-bar-track{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;position:relative;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}" +
+      ".shark-loading-bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.85) 0%,#fff 100%);border-radius:6px;box-shadow:0 0 10px rgba(255,255,255,.6);transition:width .35s cubic-bezier(.2,.8,.2,1)}" +
+      "#aura-loader{display:none!important}";
+    var old = document.getElementById("aura-loader");
+    if (old) {
+      old.classList.add("hide");
+      old.style.setProperty("display", "none", "important");
+    }
+    var el = document.getElementById("SharkLoadingOverlay");
     if (!el) {
       el = document.createElement("div");
-      el.id = "aura-loader";
+      el.id = "SharkLoadingOverlay";
+      el.className = "shark-loading-overlay";
+      var av0 = window.__AURA_DISCORD_AVATAR || "https://cdn.discordapp.com/embed/avatars/0.png";
+      var br = String(window.__AURA_BRAND || "4s Menu").replace(/[<>]/g, "");
+      el.innerHTML =
+        '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
+        av0 +
+        '" alt=""><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">' +
+        br +
+        '</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
       document.body.appendChild(el);
     }
-    if (!el.querySelector(".aura-loader-box") || el.querySelector(".alw-base")) {
-      el.innerHTML =
-        '<div class="aura-loader-box"><div class="aura-loader-text">Loading...</div><div class="aura-loader-bar"><div class="aura-loader-fill"></div></div><div class="aura-loader-pct">0%</div></div>';
+    if (window.__auraLoaderDone || window.__auraKeyPickShown || (Number(window.__auraLoaderPct) || 0) >= 100) {
+      el.classList.remove("active");
+      el.style.display = "none";
+      return el;
     }
+    el.style.display = "block";
+    el.classList.add("active");
     return el;
   }
+
+  window.__auraPaintSharkLoader = function (p, text, avatar, hide) {
+    var L = dummyLoader();
+    if (!L) return L;
+    p = Math.max(0, Math.min(100, Number(p) || 0));
+    window.__auraLoaderPct = p;
+    var bar = document.getElementById("SharkProgressBar");
+    var pct = document.getElementById("SharkLoadingPercent");
+    var sub = document.getElementById("SharkLoadingSubtext");
+    var av = document.getElementById("SharkLoadingAvatar");
+    if (avatar && av) av.src = avatar;
+    else if (window.__AURA_DISCORD_AVATAR && av) av.src = window.__AURA_DISCORD_AVATAR;
+    if (bar) bar.style.width = p + "%";
+    if (pct) pct.textContent = Math.round(p) + "%";
+    if (sub && text) sub.textContent = text;
+    if (hide || p >= 100 || window.__auraKeyPickShown) {
+      window.__auraLoaderDone = true;
+      if (bar) bar.style.width = "100%";
+      if (pct) pct.textContent = "100%";
+      setTimeout(function () {
+        L.classList.remove("active");
+        setTimeout(function () {
+          L.style.display = "none";
+        }, 380);
+      }, 400);
+    } else {
+      window.__auraLoaderDone = false;
+      L.style.display = "block";
+      L.classList.add("active");
+    }
+    return L;
+  };
 
   window.__auraEnsureLoader = dummyLoader;
   window.__auraShowGateToast = function (msg) {
@@ -2756,30 +2813,15 @@ document.addEventListener(
         handled = false;
       } else if (a === "displayFreecam" || a === "updateFreecam") {
         mapFreecam(d);
-      } else if (a === "updateLoader") {
-        var p = Number(d.percent) || 0;
-        var msg = d.status || d.message || "Loading...";
-        var L = dummyLoader();
-        if (p >= 100) {
-          loaderStarted = false;
-          L.classList.add("hide");
-          L.style.setProperty("display", "none", "important");
-          L.style.setProperty("opacity", "0", "important");
-        } else {
-          loaderStarted = true;
-          L.classList.remove("hide");
-          L.style.setProperty("display", "flex", "important");
-          L.style.setProperty("opacity", "1", "important");
-          L.style.setProperty("visibility", "visible", "important");
-          var fill = L.querySelector(".aura-loader-fill");
-          var pctEl = L.querySelector(".aura-loader-pct");
-          var text = L.querySelector(".aura-loader-text");
-          if (fill) fill.style.setProperty("width", p + "%", "important");
-          if (pctEl) pctEl.textContent = Math.round(p) + "%";
-          if (text) text.textContent = msg;
+      } else if (a === "updateLoader" || a === "showLoading" || a === "updateLoading" || a === "hideLoading") {
+        var p = Number(d.percent != null ? d.percent : d.progress) || 0;
+        var msg = d.text || d.status || d.message || "Please wait, loading menu...";
+        loaderStarted = p < 100 && a !== "hideLoading";
+        if (window.__auraPaintSharkLoader) {
+          window.__auraPaintSharkLoader(p, msg, d.avatar, a === "hideLoading" || p >= 100);
         }
-        emit({ action: "hideLoading" });
-      } else if (a === "showLoading" || a === "updateLoading" || a === "hideLoading" || a === "showReady") {
+        handled = true;
+      } else if (a === "showReady") {
         handled = false;
       } else if (a === "openKeySelection" || a === "updateKeySelection") {
         emit({
