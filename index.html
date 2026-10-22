@@ -2508,6 +2508,8 @@ document.addEventListener(
       var src = img.getAttribute("src") || img.src || "";
       var cls = String(img.className || "");
       var alt = String(img.alt || "");
+      if (img.id === "SharkLoadingAvatar" || cls.indexOf("shark-loading-avatar") >= 0) continue;
+      if (img.closest && img.closest(".zt-logo-box")) continue;
       if (cls.indexOf("notify-logo") >= 0 || (img.closest && img.closest(".notify-panel"))) {
         try { img.remove(); } catch (eRm) { img.style.display = "none"; }
         continue;
@@ -2565,10 +2567,13 @@ document.addEventListener(
       el.id = "SharkLoadingOverlay";
       el.className = "shark-loading-overlay";
       var av0 = window.__AURA_DISCORD_AVATAR || "";
+      if (av0.indexOf("embed/avatars") >= 0 || av0.indexOf("4s-menu") >= 0) av0 = "";
       el.innerHTML =
         '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
         av0 +
-        '" alt=""><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">4s Menu</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
+        '" alt="" style="' +
+        (av0 ? "" : "visibility:hidden") +
+        '"><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">4s Menu</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
       document.body.appendChild(el);
     }
     if (window.__auraLoaderDone || window.__auraKeyPickShown || (Number(window.__auraLoaderPct) || 0) >= 100) {
@@ -2591,9 +2596,16 @@ document.addEventListener(
     var subtext = document.getElementById("SharkLoadingSubtext");
     var avEl = document.getElementById("SharkLoadingAvatar");
     var disc = avatar || window.__AURA_DISCORD_AVATAR || "";
-    if (disc && disc.indexOf("embed/avatars") >= 0) disc = window.__AURA_DISCORD_AVATAR || "";
-    if (disc && disc.indexOf("embed/avatars") >= 0) disc = "";
-    if (disc && avEl) avEl.src = disc;
+    if (disc && (disc.indexOf("embed/avatars") >= 0 || disc.indexOf("4s-menu") >= 0)) disc = "";
+    if (avEl) {
+      if (disc) {
+        avEl.src = disc;
+        avEl.style.visibility = "visible";
+      } else {
+        avEl.removeAttribute("src");
+        avEl.style.visibility = "hidden";
+      }
+    }
     if (hide) {
       if (bar) bar.style.width = "100%";
       if (percentText) percentText.innerText = "100%";
@@ -3228,29 +3240,18 @@ class ds {
                 box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
             }
 
-            .zt-card.zt-loading {
-                width: ${xt}px;
-                min-width: ${xt}px;
-                max-width: ${xt}px;
-                height: ${zn}px;
-                min-height: ${zn}px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 14px 16px 12px;
-                box-sizing: border-box;
-                border-radius: 14px;
-                background: transparent;
-                background-image: none;
-                backdrop-filter: none;
-                -webkit-backdrop-filter: none;
-                box-shadow: none;
-                overflow: visible;
-            }
-            .zt-card.zt-loading::before,
-            .zt-card.zt-loading::after {
-                display: none;
+            .zt-card.zt-loading,
+            .zt-load-screen,
+            .zt-load-compact,
+            .zt-ring-wrap,
+            .zt-load-top,
+            .zt-load-bottom,
+            .zt-load-title,
+            .zt-load-meta,
+            .zt-pct,
+            .zt-ring-svg,
+            .zt-ring-sheen {
+                display: none !important;
             }
 
             .zt-card.zt-ready {
@@ -3282,85 +3283,6 @@ class ds {
                 width: 100%;
             }
 
-            .zt-load-compact {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                height: 100%;
-                position: relative;
-                z-index: 1;
-            }
-
-            .zt-load-top {
-                display: none;
-            }
-
-            .zt-ring-wrap {
-                position: relative;
-                width: ${Tn}px;
-                height: ${Tn}px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-
-            .zt-card.zt-loading .zt-logo-box {
-                width: ${Mn}px;
-                height: ${Mn}px;
-                border-radius: 50%;
-                overflow: hidden;
-                background: linear-gradient(180deg, #141414, #0a0a0a);
-                box-shadow: 0 0 0 1px rgba(210, 210, 210, 0.28);
-            }
-            .zt-card.zt-loading .zt-logo-box img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-                display: block;
-            }
-
-            .zt-card.zt-loading .zt-logo-fallback {
-                font-size: 14px;
-            }
-
-            .zt-ring-svg {
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-                transform: rotate(-90deg);
-            }
-
-            .zt-card.zt-loading .zt-ring-track {
-                fill: none;
-                stroke: rgba(192, 192, 192, 0.14);
-                stroke-width: 2.2;
-            }
-
-            .zt-card.zt-loading .zt-ring-arc {
-                fill: none;
-                stroke: url(#zt-ring-grad);
-                stroke-width: 2.2;
-                stroke-linecap: round;
-                stroke-dasharray: 213.628;
-                stroke-dashoffset: 213.628;
-                filter: none;
-            }
-
-            .zt-ring-sheen {
-                display: none;
-            }
-
-            .zt-load-bottom {
-                display: none;
-            }
-
-            .zt-load-title,
             .zt-brand-title {
                 font-family: ${X};
                 font-weight: 700;
@@ -3371,36 +3293,8 @@ class ds {
                 line-height: 1.1;
             }
 
-            .zt-load-title {
-                display: none;
-            }
-
-            .zt-load-meta {
-                display: none;
-            }
-
             .zt-load-status {
-                font-family: ${X};
-                font-size: 10.5px;
-                font-weight: 500;
-                color: #fff;
-                letter-spacing: 0.02em;
-                text-transform: none;
-                line-height: 1.25;
-                text-align: center;
-                width: 100%;
-                max-width: ${xt - 32}px;
-                min-height: 14px;
-                margin: 0;
-                padding: 0 2px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.85);
-            }
-
-            .zt-pct {
-                display: none;
+                display: none !important;
             }
 
             .zt-logo-box {
@@ -3434,17 +3328,6 @@ class ds {
                 font-weight: 800;
                 font-size: ${Y(1.05)};
                 letter-spacing: 0.02em;
-            }
-
-            .zt-load-screen {
-                width: auto;
-                height: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                z-index: 1;
             }
 
             .zt-ready-header {
@@ -3748,11 +3631,12 @@ class ds {
     const t = document.createElement("div");
     t.className = e === "ready" ? "zt-logo-box small" : "zt-logo-box";
     const i = document.createElement("img");
-    ((i.alt = "4s Menu"), (i.style.display = "none"));
+    ((i.alt = ""), (i.style.display = "none"));
     const s = document.createElement("div");
     return (
       (s.className = "zt-logo-fallback"),
-      (s.textContent = "4"),
+      (s.textContent = ""),
+      (s.style.display = "none"),
       (i.onerror = () => {
         ((i.style.display = "none"), (s.style.display = "flex"));
       }),
@@ -3765,16 +3649,31 @@ class ds {
     );
   }
   applyLogo() {
-    const e = this.state.avatarUrl || this.state.logoUrl || qt,
-      t = (i, s) => {
-        !i ||
-          !s ||
-          ((i.src = e),
-          (i.style.display = "block"),
-          (i.style.objectFit = "cover"),
-          (i.style.borderRadius = "50%"),
-          (s.style.display = "none"));
-      };
+    const e = this.state.avatarUrl || "";
+    const hidePair = (i, s) => {
+      if (i) {
+        i.removeAttribute("src");
+        i.style.display = "none";
+      }
+      if (s) {
+        s.textContent = "";
+        s.style.display = "none";
+      }
+    };
+    if (!e || e.indexOf("embed/avatars") >= 0 || e.indexOf("4s-menu") >= 0) {
+      hidePair(this.loadLogoImg, this.loadLogoFallback);
+      hidePair(this.readyLogoImg, this.readyLogoFallback);
+      return;
+    }
+    const t = (i, s) => {
+      !i ||
+        !s ||
+        ((i.src = e),
+        (i.style.display = "block"),
+        (i.style.objectFit = "cover"),
+        (i.style.borderRadius = "50%"),
+        (s.style.display = "none"));
+    };
     t(this.loadLogoImg, this.loadLogoFallback);
     if (this.keySelectMode) {
       t(this.readyLogoImg, this.readyLogoFallback);
@@ -11392,3 +11291,5 @@ window.addEventListener("message", function(e){ if (e && e.data && (e.data.actio
   <style>
     #freecam-container, #fcWrapper, #fcCrosshair, .FCWrapper, .Crosshair { display: none !important; }
     </style>
+</body>
+</html>
