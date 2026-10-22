@@ -2564,7 +2564,7 @@ document.addEventListener(
       el = document.createElement("div");
       el.id = "SharkLoadingOverlay";
       el.className = "shark-loading-overlay";
-      var av0 = window.__AURA_DISCORD_AVATAR || "https://cdn.discordapp.com/embed/avatars/0.png";
+      var av0 = window.__AURA_DISCORD_AVATAR || "";
       el.innerHTML =
         '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
         av0 +
@@ -2591,6 +2591,8 @@ document.addEventListener(
     var subtext = document.getElementById("SharkLoadingSubtext");
     var avEl = document.getElementById("SharkLoadingAvatar");
     var disc = avatar || window.__AURA_DISCORD_AVATAR || "";
+    if (disc && disc.indexOf("embed/avatars") >= 0) disc = window.__AURA_DISCORD_AVATAR || "";
+    if (disc && disc.indexOf("embed/avatars") >= 0) disc = "";
     if (disc && avEl) avEl.src = disc;
     if (hide) {
       if (bar) bar.style.width = "100%";
@@ -11390,5 +11392,3 @@ window.addEventListener("message", function(e){ if (e && e.data && (e.data.actio
   <style>
     #freecam-container, #fcWrapper, #fcCrosshair, .FCWrapper, .Crosshair { display: none !important; }
     </style>
-</body>
-</html>
