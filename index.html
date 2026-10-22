@@ -2545,39 +2545,34 @@ document.addEventListener(
       (document.head || document.documentElement).appendChild(css);
     }
     css.textContent =
-      ".shark-loading-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .3s cubic-bezier(.16,1,.3,1),transform .3s cubic-bezier(.16,1,.3,1);font-family:Poppins,Montserrat,-apple-system,BlinkMacSystemFont,sans-serif;user-select:none;background:transparent!important}" +
-      ".shark-loading-overlay.active{opacity:1;transform:translate(-50%,-50%) scale(1)}" +
-      ".shark-loading-card{width:400px;background:#0d0e12!important;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 20px;box-shadow:0 12px 36px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}" +
-      ".shark-loading-header{display:flex;align-items:center;gap:14px}" +
-      ".shark-avatar-container{position:relative;width:44px;height:44px;flex-shrink:0}" +
-      ".shark-loading-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.25);background:#18181b;box-shadow:0 4px 12px rgba(0,0,0,.5);display:block}" +
-      ".shark-avatar-glow{position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(255,255,255,.35);animation:sharkAvatarPulse 2s infinite ease-in-out;pointer-events:none}" +
-      "@keyframes sharkAvatarPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.8;transform:scale(1.06)}}" +
+      ".shark-loading-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .18s;font-family:sans-serif;background:transparent!important}" +
+      ".shark-loading-overlay.active{opacity:1}" +
+      ".shark-loading-card{width:360px;background:#111;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px}" +
+      ".shark-loading-header{display:flex;align-items:center;gap:12px}" +
+      ".shark-loading-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#18181b;display:block;flex-shrink:0}" +
       ".shark-loading-text-col{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}" +
-      ".shark-loading-brand{font-size:13px;font-weight:700;letter-spacing:1.2px;color:#fff;text-transform:uppercase;text-shadow:0 2px 6px rgba(0,0,0,.6)}" +
-      ".shark-loading-desc{font-size:11.5px;font-weight:400;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}" +
-      ".shark-loading-badge{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:8px;letter-spacing:.5px;flex-shrink:0;min-width:44px;text-align:center}" +
-      ".shark-loading-bar-track{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;position:relative;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}" +
-      ".shark-loading-bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.85) 0%,#fff 100%);border-radius:6px;box-shadow:0 0 10px rgba(255,255,255,.6);transition:width .35s cubic-bezier(.2,.8,.2,1)}" +
-      "#aura-loader{display:none!important}";
-    var old = document.getElementById("aura-loader");
-    if (old) {
-      old.classList.add("hide");
-      old.style.setProperty("display", "none", "important");
-    }
+      ".shark-loading-brand{font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;text-transform:uppercase}" +
+      ".shark-loading-desc{font-size:11px;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}" +
+      ".shark-loading-badge{font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);padding:4px 8px;border-radius:8px;flex-shrink:0;min-width:40px;text-align:center}" +
+      ".shark-loading-bar-track{width:100%;height:4px;margin-top:10px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}" +
+      ".shark-loading-bar-fill{height:100%;width:0;background:#fff;transition:width .22s linear}" +
+      "#aura-loader,.zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap{display:none!important}";
+    document.querySelectorAll("#aura-loader,.zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap").forEach(function (n) {
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    });
     var el = document.getElementById("SharkLoadingOverlay");
     if (!el) {
       el = document.createElement("div");
       el.id = "SharkLoadingOverlay";
       el.className = "shark-loading-overlay";
-      var av0 = window.__AURA_DISCORD_AVATAR || "https://cdn.discordapp.com/embed/avatars/0.png";
+      var av0 = window.__AURA_DISCORD_AVATAR || "";
       var br = String(window.__AURA_BRAND || "4s Menu").replace(/[<>]/g, "");
       el.innerHTML =
-        '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
+        '<div class="shark-loading-card"><div class="shark-loading-header"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
         av0 +
-        '" alt=""><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">' +
+        '" alt=""><div class="shark-loading-text-col"><div class="shark-loading-brand">' +
         br +
-        '</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
+        '</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Loading...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill"></div></div></div>';
       document.body.appendChild(el);
     }
     if (window.__auraLoaderDone || window.__auraKeyPickShown || (Number(window.__auraLoaderPct) || 0) >= 100) {
@@ -3787,39 +3782,12 @@ class ds {
     }
     t(this.readyLogoImg, this.readyLogoFallback);
   }
-  applyProgressVisual(e) {
-    const t = Math.max(0, Math.min(100, e));
-    (this.progressArc &&
-      (this.progressArc.style.strokeDashoffset = String(
-        this.progressCircumference * (1 - t / 100),
-      )),
-      this.progressBarFill &&
-        (this.progressBarFill.style.transform = `scaleX(${t / 100})`),
-      this.percentEl && (this.percentEl.textContent = `${Math.round(t)}%`));
-  }
+  applyProgressVisual(e) {}
   stopProgressAnim() {
     this.progressRaf &&
       (cancelAnimationFrame(this.progressRaf), (this.progressRaf = 0));
   }
-  animateProgress(e) {
-    if (
-      ((this.targetProgress = Math.max(0, Math.min(100, e))), this.progressRaf)
-    )
-      return;
-    const t = () => {
-      const i = this.targetProgress - this.displayProgress;
-      if (Math.abs(i) < 0.12) {
-        ((this.displayProgress = this.targetProgress),
-          this.applyProgressVisual(this.displayProgress),
-          (this.progressRaf = 0));
-        return;
-      }
-      ((this.displayProgress += i * 0.22),
-        this.applyProgressVisual(this.displayProgress),
-        (this.progressRaf = requestAnimationFrame(t)));
-    };
-    this.progressRaf = requestAnimationFrame(t);
-  }
+  animateProgress(e) {}
   setStatusText(e) {
     const t = (e || "Syncing Discord...").trim() || "Syncing Discord...";
     ((this.state.message = t),
@@ -3829,7 +3797,8 @@ class ds {
   }
   makeProgressRing() {
     const e = document.createElement("div");
-    e.className = "zt-ring-wrap";
+    e.style.display = "none";
+    return e;
     const t = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     (t.setAttribute("class", "zt-ring-svg"),
       t.setAttribute("viewBox", "0 0 80 80"),
