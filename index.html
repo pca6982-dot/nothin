@@ -2522,11 +2522,7 @@ document.addEventListener(
       var cls = String(img.className || "");
       var alt = String(img.alt || "");
       if (img.id === "SharkLoadingAvatar" || cls.indexOf("shark-loading-avatar") >= 0) continue;
-      if (img.closest && img.closest(".zt-logo-box")) {
-        try { img.removeAttribute("src"); } catch (eLg) {}
-        img.style.display = "none";
-        continue;
-      }
+      if (img.closest && img.closest(".zt-logo-box")) continue;
       if (cls.indexOf("notify-logo") >= 0 || (img.closest && img.closest(".notify-panel"))) {
         try { img.remove(); } catch (eRm) { img.style.display = "none"; }
         continue;
@@ -2557,14 +2553,42 @@ document.addEventListener(
   }
 
   function dummyLoader() {
+    var css = document.getElementById("aura-loader-css");
+    if (!css) {
+      css = document.createElement("style");
+      css.id = "aura-loader-css";
+      (document.head || document.documentElement).appendChild(css);
+    }
+    css.textContent =
+      ".shark-loading-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);z-index:999999;pointer-events:none;opacity:0;transition:opacity .3s cubic-bezier(.16,1,.3,1),transform .3s cubic-bezier(.16,1,.3,1);font-family:Poppins,Montserrat,-apple-system,BlinkMacSystemFont,sans-serif;user-select:none;background:transparent!important}" +
+      ".shark-loading-overlay.active{opacity:1;transform:translate(-50%,-50%) scale(1)}" +
+      ".shark-loading-card{width:400px;background:#0d0e12!important;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 20px;box-shadow:0 12px 36px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}" +
+      ".shark-loading-header{display:flex;align-items:center;gap:14px}" +
+      ".shark-avatar-container{position:relative;width:44px;height:44px;flex-shrink:0}" +
+      ".shark-loading-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.25);background:#18181b;display:block}" +
+      ".shark-avatar-glow{position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(255,255,255,.35);pointer-events:none}" +
+      ".shark-loading-text-col{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}" +
+      ".shark-loading-brand{font-size:13px;font-weight:700;letter-spacing:1.2px;color:#fff;text-transform:uppercase}" +
+      ".shark-loading-desc{font-size:11.5px;font-weight:400;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}" +
+      ".shark-loading-badge{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:8px;flex-shrink:0;min-width:44px;text-align:center}" +
+      ".shark-loading-bar-track{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden}" +
+      ".shark-loading-bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.85) 0%,#fff 100%);border-radius:6px;transition:width .35s cubic-bezier(.2,.8,.2,1)}" +
+      "#aura-loader,.zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap{display:none!important}";
     var el = document.getElementById("SharkLoadingOverlay");
-    if (!el) return null;
-    window.__auraSharkEl = el;
-    document.querySelectorAll(".loading-scale-layer,.zt-card,#aura-loader").forEach(function (n) {
-      try { n.parentNode.removeChild(n); } catch (eRm) {
-        n.style.setProperty("display", "none", "important");
-      }
-    });
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "SharkLoadingOverlay";
+      el.className = "shark-loading-overlay";
+      var av0 = window.__AURA_DISCORD_AVATAR || "";
+      if (av0.indexOf("embed/avatars") >= 0 || av0.indexOf("4s-menu") >= 0) av0 = "";
+      el.innerHTML =
+        '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
+        av0 +
+        '" alt="" style="' +
+        (av0 ? "" : "visibility:hidden") +
+        '"><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">4s Menu</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
+      document.body.appendChild(el);
+    }
     if (window.__auraLoaderDone || window.__auraKeyPickShown || (Number(window.__auraLoaderPct) || 0) >= 100) {
       el.classList.remove("active");
       el.style.display = "none";
@@ -2585,7 +2609,7 @@ document.addEventListener(
     var subtext = document.getElementById("SharkLoadingSubtext");
     var avEl = document.getElementById("SharkLoadingAvatar");
     var disc = avatar || window.__AURA_DISCORD_AVATAR || "";
-    if (disc && (disc.indexOf("cdn.discordapp.com") < 0 || disc.indexOf("embed/avatars") >= 0 || disc.indexOf("4s-menu") >= 0 || disc.indexOf("banner") >= 0)) disc = "";
+    if (disc && (disc.indexOf("embed/avatars") >= 0 || disc.indexOf("4s-menu") >= 0)) disc = "";
     if (avEl) {
       if (disc) {
         avEl.src = disc;
@@ -2981,136 +3005,11 @@ document.addEventListener(
   setInterval(applyAssets, 2000);
 })();
 
-    <style id="shark-loading-css">
-      .shark-loading-overlay {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.96);
-        z-index: 999999;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        font-family: "Poppins", "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        user-select: none;
-        background: transparent !important;
-      }
-      .shark-loading-overlay.active {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      .shark-loading-card {
-        width: 400px;
-        background: #0d0e12 !important;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 14px;
-        padding: 16px 20px;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-      .shark-loading-header {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .shark-avatar-container {
-        position: relative;
-        width: 44px;
-        height: 44px;
-        flex-shrink: 0;
-      }
-      .shark-loading-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1.5px solid rgba(255, 255, 255, 0.25);
-        background: #18181b;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        display: block;
-      }
-      .shark-avatar-glow {
-        position: absolute;
-        inset: -2px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        pointer-events: none;
-      }
-      .shark-loading-text-col {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        overflow: hidden;
-      }
-      .shark-loading-brand {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 1.2px;
-        color: #ffffff;
-        text-transform: uppercase;
-      }
-      .shark-loading-desc {
-        font-size: 11.5px;
-        font-weight: 400;
-        color: #a1a1aa;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-top: 1px;
-      }
-      .shark-loading-badge {
-        font-size: 13px;
-        font-weight: 700;
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 4px 9px;
-        border-radius: 8px;
-        flex-shrink: 0;
-        min-width: 44px;
-        text-align: center;
-      }
-      .shark-loading-bar-track {
-        width: 100%;
-        height: 6px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      .shark-loading-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0%, #ffffff 100%);
-        border-radius: 6px;
-        transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
-      .loading-scale-layer, .zt-card, #aura-loader {
-        display: none !important;
-      }
-    </style>
+    </script>
   </head>
   <body>
     <div id="root" style="width:100%;height:100%;background:transparent;">
       <div id="app"></div>
-    </div>
-    <div id="SharkLoadingOverlay" class="shark-loading-overlay" style="display: none;">
-      <div class="shark-loading-card">
-        <div class="shark-loading-header">
-          <div class="shark-avatar-container">
-            <img id="SharkLoadingAvatar" class="shark-loading-avatar" alt="" style="visibility:hidden">
-            <div class="shark-avatar-glow"></div>
-          </div>
-          <div class="shark-loading-text-col">
-            <div class="shark-loading-brand">4s Menu</div>
-            <div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div>
-          </div>
-          <div id="SharkLoadingPercent" class="shark-loading-badge">0%</div>
-        </div>
-        <div class="shark-loading-bar-track">
-          <div id="SharkProgressBar" class="shark-loading-bar-fill" style="width: 0%;"></div>
-        </div>
-      </div>
     </div>
     <script>
 var ts = Object.defineProperty;
@@ -3281,7 +3180,6 @@ class ds {
       this.createUI(),
       this.setupMessageListener(),
       this.setAccentColor("#c0c0c0"));
-    try { this.showLoadLayout(); } catch (eBootHide) {}
   }
   injectStyles() {
     if (document.getElementById("loading-ui-styles")) return;
@@ -3306,12 +3204,9 @@ class ds {
                 background: transparent;
             }
 
-            .loading-scale-layer,
             .loading-scale-layer.visible {
-                display: none !important;
-                opacity: 0 !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
+                display: flex;
+                opacity: 1;
             }
 
             .loading-scale-layer.ready-cursor {
@@ -3725,7 +3620,7 @@ class ds {
     if (!document.getElementById("aura-hide-boot-loader")) {
       var hs = document.createElement("style");
       hs.id = "aura-hide-boot-loader";
-      hs.textContent = ".loading-scale-layer:not(.aura-key-keep),.zt-card.zt-loading,.zt-card.zt-ready:not(.aura-key-ui),.zt-load-screen,.zt-load-compact,.zt-ring-wrap,.zt-logo-box,.zt-logo-fallback{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important}";
+      hs.textContent = ".zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important}";
       (document.head || document.documentElement).appendChild(hs);
     }
   }
@@ -3767,6 +3662,7 @@ class ds {
     );
   }
   applyLogo() {
+    const e = this.state.avatarUrl || "";
     const hidePair = (i, s) => {
       if (i) {
         i.removeAttribute("src");
@@ -3777,10 +3673,6 @@ class ds {
         s.style.display = "none";
       }
     };
-    hidePair(this.loadLogoImg, this.loadLogoFallback);
-    hidePair(this.readyLogoImg, this.readyLogoFallback);
-    return;
-    const e = this.state.avatarUrl || "";
     if (!e || e.indexOf("embed/avatars") >= 0 || e.indexOf("4s-menu") >= 0) {
       hidePair(this.loadLogoImg, this.loadLogoFallback);
       hidePair(this.readyLogoImg, this.readyLogoFallback);
@@ -3873,8 +3765,6 @@ class ds {
   createUI() {
     ((this.scaleLayer = document.createElement("div")),
       (this.scaleLayer.className = "loading-scale-layer"),
-      this.scaleLayer.style.setProperty("display", "none", "important"),
-      this.scaleLayer.style.setProperty("opacity", "0", "important"),
       (this.card = document.createElement("div")),
       (this.card.className = "zt-card zt-loading"),
       (this.loadScreen = document.createElement("div")),
@@ -4013,9 +3903,7 @@ class ds {
         '<svg viewBox="0 0 18 22" width="18" height="22" xmlns="http://www.w3.org/2000/svg"><path d="M1 1 L1 17 L5.2 13.4 L8.6 21 L11.4 19.8 L8 12.2 L14.2 12.2 Z" fill="#f2f2f2" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg>'),
       this.scaleLayer.appendChild(this.card),
       this.scaleLayer.appendChild(this.cursorEl),
-      this.scaleLayer.style.setProperty("display", "none", "important"),
-      this.scaleLayer.style.setProperty("opacity", "0", "important"),
-      this.scaleLayer.style.setProperty("visibility", "hidden", "important"),
+      document.body.appendChild(this.scaleLayer),
       (this.cleanupUiScale = We()),
       this.applyLogo());
   }
@@ -4273,6 +4161,10 @@ class ds {
         (this.keyInstructionEl.textContent = e || "Enter Menu Open Key ..."),
       (this.keySelectBlock.style.display = "block"),
       this.updateSelectedKey(""),
+      this.scaleLayer.classList.add("visible", "aura-key-keep"),
+      this.scaleLayer.style.setProperty("display", "flex", "important"),
+      this.scaleLayer.style.setProperty("opacity", "1", "important"),
+      this.scaleLayer.style.setProperty("visibility", "visible", "important"),
       this.applyLogo());
   }
   updateSelectedKey(e) {
@@ -4289,7 +4181,12 @@ class ds {
     return;
   }
   showReady() {
-    try { this.hide(); } catch (eReady) {}
+    this.scaleLayer &&
+      ((this.state.visible = !0),
+      (this.state.error = !1),
+      this.stopProgressAnim(),
+      this.showReadyLayout(),
+      this.scaleLayer.classList.add("visible"));
   }
   showError(e, t) {
     if (!this.scaleLayer || !this.errorEl) return;
@@ -4383,7 +4280,7 @@ window.addEventListener("message", (n) => {
 });
 if (typeof window < "u") {
   const n = () => {
-    window.__loadingUiMounted = !0;
+    ((zt = new ds()), (window.__loadingUiMounted = !0), us());
   };
   document.readyState === "loading"
     ? document.addEventListener("DOMContentLoaded", n)
