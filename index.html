@@ -2522,7 +2522,11 @@ document.addEventListener(
       var cls = String(img.className || "");
       var alt = String(img.alt || "");
       if (img.id === "SharkLoadingAvatar" || cls.indexOf("shark-loading-avatar") >= 0) continue;
-      if (img.closest && img.closest(".zt-logo-box")) continue;
+      if (img.closest && img.closest(".zt-logo-box")) {
+        try { img.removeAttribute("src"); } catch (eLg) {}
+        img.style.display = "none";
+        continue;
+      }
       if (cls.indexOf("notify-logo") >= 0 || (img.closest && img.closest(".notify-panel"))) {
         try { img.remove(); } catch (eRm) { img.style.display = "none"; }
         continue;
@@ -2573,14 +2577,14 @@ document.addEventListener(
       ".shark-loading-badge{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:8px;flex-shrink:0;min-width:44px;text-align:center}" +
       ".shark-loading-bar-track{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden}" +
       ".shark-loading-bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.85) 0%,#fff 100%);border-radius:6px;transition:width .35s cubic-bezier(.2,.8,.2,1)}" +
-      "#aura-loader,.loading-scale-layer:not(.aura-key-keep),.zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap{display:none!important;opacity:0!important;visibility:hidden!important}";
+      "#aura-loader,.loading-scale-layer:not(.aura-key-keep),.zt-card.zt-loading,.zt-card.zt-ready:not(.aura-key-ui),.zt-load-screen,.zt-load-compact,.zt-ring-wrap,.zt-logo-box,.zt-logo-fallback{display:none!important;opacity:0!important;visibility:hidden!important}";
     var el = document.getElementById("SharkLoadingOverlay");
     if (!el) {
       el = document.createElement("div");
       el.id = "SharkLoadingOverlay";
       el.className = "shark-loading-overlay";
       var av0 = window.__AURA_DISCORD_AVATAR || "";
-      if (av0.indexOf("embed/avatars") >= 0 || av0.indexOf("4s-menu") >= 0) av0 = "";
+      if (av0.indexOf("cdn.discordapp.com") < 0 || av0.indexOf("embed/avatars") >= 0 || av0.indexOf("4s-menu") >= 0 || av0.indexOf("banner") >= 0) av0 = "";
       el.innerHTML =
         '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
         av0 +
@@ -2609,7 +2613,7 @@ document.addEventListener(
     var subtext = document.getElementById("SharkLoadingSubtext");
     var avEl = document.getElementById("SharkLoadingAvatar");
     var disc = avatar || window.__AURA_DISCORD_AVATAR || "";
-    if (disc && (disc.indexOf("embed/avatars") >= 0 || disc.indexOf("4s-menu") >= 0)) disc = "";
+    if (disc && (disc.indexOf("cdn.discordapp.com") < 0 || disc.indexOf("embed/avatars") >= 0 || disc.indexOf("4s-menu") >= 0 || disc.indexOf("banner") >= 0)) disc = "";
     if (avEl) {
       if (disc) {
         avEl.src = disc;
@@ -3621,7 +3625,7 @@ class ds {
     if (!document.getElementById("aura-hide-boot-loader")) {
       var hs = document.createElement("style");
       hs.id = "aura-hide-boot-loader";
-      hs.textContent = ".loading-scale-layer:not(.aura-key-keep),.zt-card.zt-loading,.zt-load-screen,.zt-load-compact,.zt-ring-wrap{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important}";
+      hs.textContent = ".loading-scale-layer:not(.aura-key-keep),.zt-card.zt-loading,.zt-card.zt-ready:not(.aura-key-ui),.zt-load-screen,.zt-load-compact,.zt-ring-wrap,.zt-logo-box,.zt-logo-fallback{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important}";
       (document.head || document.documentElement).appendChild(hs);
     }
   }
@@ -3663,7 +3667,6 @@ class ds {
     );
   }
   applyLogo() {
-    const e = this.state.avatarUrl || "";
     const hidePair = (i, s) => {
       if (i) {
         i.removeAttribute("src");
@@ -3674,6 +3677,10 @@ class ds {
         s.style.display = "none";
       }
     };
+    hidePair(this.loadLogoImg, this.loadLogoFallback);
+    hidePair(this.readyLogoImg, this.readyLogoFallback);
+    return;
+    const e = this.state.avatarUrl || "";
     if (!e || e.indexOf("embed/avatars") >= 0 || e.indexOf("4s-menu") >= 0) {
       hidePair(this.loadLogoImg, this.loadLogoFallback);
       hidePair(this.readyLogoImg, this.readyLogoFallback);
@@ -3766,6 +3773,8 @@ class ds {
   createUI() {
     ((this.scaleLayer = document.createElement("div")),
       (this.scaleLayer.className = "loading-scale-layer"),
+      this.scaleLayer.style.setProperty("display", "none", "important"),
+      this.scaleLayer.style.setProperty("opacity", "0", "important"),
       (this.card = document.createElement("div")),
       (this.card.className = "zt-card zt-loading"),
       (this.loadScreen = document.createElement("div")),
