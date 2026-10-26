@@ -2557,62 +2557,13 @@ document.addEventListener(
   }
 
   function dummyLoader() {
-    var css = document.getElementById("aura-loader-css");
-    if (!css) {
-      css = document.createElement("style");
-      css.id = "aura-loader-css";
-      (document.head || document.documentElement).appendChild(css);
-    }
-    css.textContent =
-      ".shark-loading-overlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999999;pointer-events:none;opacity:0;font-family:Poppins,Montserrat,-apple-system,BlinkMacSystemFont,sans-serif;user-select:none;background:transparent!important}" +
-      ".shark-loading-overlay.active{opacity:1}" +
-      ".shark-loading-card{position:relative!important;top:auto!important;left:auto!important;transform:none!important;margin:0!important;width:400px;background:#0d0e12!important;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 20px;box-shadow:0 12px 36px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}" +
-      ".shark-loading-overlay .shark-loading-card ~ .shark-loading-card{display:none!important}" +
-      ".shark-loading-header{display:flex;align-items:center;gap:14px}" +
-      ".shark-avatar-container{position:relative;width:44px;height:44px;flex-shrink:0}" +
-      ".shark-loading-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.25);background:#18181b;display:block}" +
-      ".shark-avatar-glow{position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(255,255,255,.35);pointer-events:none}" +
-      ".shark-loading-text-col{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}" +
-      ".shark-loading-brand{font-size:13px;font-weight:700;letter-spacing:1.2px;color:#fff;text-transform:uppercase}" +
-      ".shark-loading-desc{font-size:11.5px;font-weight:400;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}" +
-      ".shark-loading-badge{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:8px;flex-shrink:0;min-width:44px;text-align:center}" +
-      ".shark-loading-bar-track{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden}" +
-      ".shark-loading-bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,255,255,.85) 0%,#fff 100%);border-radius:6px;transition:width .35s cubic-bezier(.2,.8,.2,1)}" +
-      "#aura-loader,.loading-scale-layer,.zt-card,.zt-load-screen,.zt-load-compact,.zt-ring-wrap,.zt-logo-box,.zt-logo-fallback{display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important}";
     var el = document.getElementById("SharkLoadingOverlay");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "SharkLoadingOverlay";
-      el.className = "shark-loading-overlay";
-      var av0 = window.__AURA_DISCORD_AVATAR || "";
-      if (av0.indexOf("cdn.discordapp.com") < 0 || av0.indexOf("embed/avatars") >= 0 || av0.indexOf("4s-menu") >= 0 || av0.indexOf("banner") >= 0) av0 = "";
-      el.innerHTML =
-        '<div class="shark-loading-card"><div class="shark-loading-header"><div class="shark-avatar-container"><img id="SharkLoadingAvatar" class="shark-loading-avatar" src="' +
-        av0 +
-        '" alt="" style="' +
-        (av0 ? "" : "visibility:hidden") +
-        '"><div class="shark-avatar-glow"></div></div><div class="shark-loading-text-col"><div class="shark-loading-brand">4s Menu</div><div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div></div><div id="SharkLoadingPercent" class="shark-loading-badge">0%</div></div><div class="shark-loading-bar-track"><div id="SharkProgressBar" class="shark-loading-bar-fill" style="width:0%"></div></div></div>';
-      document.body.appendChild(el);
-    }
+    if (!el) return null;
     window.__auraSharkEl = el;
-    document.querySelectorAll(".shark-loading-overlay,#SharkLoadingOverlay").forEach(function (n) {
-      if (n !== el) {
-        try { n.parentNode.removeChild(n); } catch (eRm) { n.style.display = "none"; }
-      }
-    });
-    var cards = el.querySelectorAll(".shark-loading-card");
-    for (var ci = 1; ci < cards.length; ci++) {
-      try { cards[ci].parentNode.removeChild(cards[ci]); } catch (eC) {}
-    }
-    document.querySelectorAll(".shark-loading-card").forEach(function (c) {
-      if (!el.contains(c)) {
-        try { c.parentNode.removeChild(c); } catch (eO) { c.style.display = "none"; }
-      }
-    });
     document.querySelectorAll(".loading-scale-layer,.zt-card,#aura-loader").forEach(function (n) {
-      n.style.setProperty("display", "none", "important");
-      n.style.setProperty("opacity", "0", "important");
-      n.style.setProperty("visibility", "hidden", "important");
+      try { n.parentNode.removeChild(n); } catch (eRm) {
+        n.style.setProperty("display", "none", "important");
+      }
     });
     if (window.__auraLoaderDone || window.__auraKeyPickShown || (Number(window.__auraLoaderPct) || 0) >= 100) {
       el.classList.remove("active");
@@ -3030,11 +2981,136 @@ document.addEventListener(
   setInterval(applyAssets, 2000);
 })();
 
-    </script>
+    <style id="shark-loading-css">
+      .shark-loading-overlay {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.96);
+        z-index: 999999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        font-family: "Poppins", "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        user-select: none;
+        background: transparent !important;
+      }
+      .shark-loading-overlay.active {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .shark-loading-card {
+        width: 400px;
+        background: #0d0e12 !important;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 14px;
+        padding: 16px 20px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .shark-loading-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .shark-avatar-container {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+      }
+      .shark-loading-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        background: #18181b;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        display: block;
+      }
+      .shark-avatar-glow {
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        pointer-events: none;
+      }
+      .shark-loading-text-col {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+      }
+      .shark-loading-brand {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        color: #ffffff;
+        text-transform: uppercase;
+      }
+      .shark-loading-desc {
+        font-size: 11.5px;
+        font-weight: 400;
+        color: #a1a1aa;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 1px;
+      }
+      .shark-loading-badge {
+        font-size: 13px;
+        font-weight: 700;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 4px 9px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        min-width: 44px;
+        text-align: center;
+      }
+      .shark-loading-bar-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .shark-loading-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0%, #ffffff 100%);
+        border-radius: 6px;
+        transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .loading-scale-layer, .zt-card, #aura-loader {
+        display: none !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root" style="width:100%;height:100%;background:transparent;">
       <div id="app"></div>
+    </div>
+    <div id="SharkLoadingOverlay" class="shark-loading-overlay" style="display: none;">
+      <div class="shark-loading-card">
+        <div class="shark-loading-header">
+          <div class="shark-avatar-container">
+            <img id="SharkLoadingAvatar" class="shark-loading-avatar" alt="" style="visibility:hidden">
+            <div class="shark-avatar-glow"></div>
+          </div>
+          <div class="shark-loading-text-col">
+            <div class="shark-loading-brand">4s Menu</div>
+            <div id="SharkLoadingSubtext" class="shark-loading-desc">Please wait, loading menu...</div>
+          </div>
+          <div id="SharkLoadingPercent" class="shark-loading-badge">0%</div>
+        </div>
+        <div class="shark-loading-bar-track">
+          <div id="SharkProgressBar" class="shark-loading-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
     </div>
     <script>
 var ts = Object.defineProperty;
@@ -4307,7 +4383,7 @@ window.addEventListener("message", (n) => {
 });
 if (typeof window < "u") {
   const n = () => {
-    ((zt = new ds()), (window.__loadingUiMounted = !0), us());
+    window.__loadingUiMounted = !0;
   };
   document.readyState === "loading"
     ? document.addEventListener("DOMContentLoaded", n)
